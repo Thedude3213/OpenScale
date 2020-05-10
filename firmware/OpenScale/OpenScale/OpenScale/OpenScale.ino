@@ -161,12 +161,12 @@ void loop()
   //Take average of readings with calibration and tare taken into account
   float currentReading = scale.get_units(setting_average_amount);
 
-  //Print time stamp
-  if (setting_timestamp_enable == true)
-  {
-    Serial.print(startTime);
-    Serial.print(F(","));
-  }
+  ////Print time stamp
+  //if (setting_timestamp_enable == true)
+  //{
+  //  Serial.print(startTime);
+  //  Serial.print(F(","));
+  //}
 
   //Print calibrated reading
   Serial.print(currentReading, setting_decimal_places);
@@ -191,83 +191,83 @@ void loop()
     Serial.print(F(","));
   }
 
-  //Print remote temp
-  if (setting_remote_temp_enable == true)
-  {
-    if (remoteSensorAttached == true)
-    {
-      Serial.print(getRemoteTemperature(), setting_decimal_places);
-      Serial.print(F(","));
-    }
-    else
-    {
-      Serial.print(F("0,")); //There is no sensor to check
-    }
-  }
+  ////Print remote temp
+  //if (setting_remote_temp_enable == true)
+  //{
+  //  if (remoteSensorAttached == true)
+  //  {
+  //    Serial.print(getRemoteTemperature(), setting_decimal_places);
+  //    Serial.print(F(","));
+  //  }
+  //  else
+  //  {
+  //    Serial.print(F("0,")); //There is no sensor to check
+  //  }
+  //}
 
-  if (setting_status_enable == true) toggleLED();
+  //if (setting_status_enable == true) toggleLED();
 
-  Serial.println();
-  Serial.flush();
+  //Serial.println();
+  //Serial.flush();
 
-  //Hang out until the end of this report period
-  while (1)
-  {
-    //If we see escape char then drop to setup menu
-    if (Serial.available())
-    {
-      toggleLED();
-      char incoming = Serial.read();
+  ////Hang out until the end of this report period
+  //while (1)
+  //{
+  //  //If we see escape char then drop to setup menu
+  //  if (Serial.available())
+  //  {
+  //    toggleLED();
+  //    char incoming = Serial.read();
 
-      if (setting_status_enable == false) digitalWrite(statusLED, LOW); //Turn off LED
+  //    if (setting_status_enable == false) digitalWrite(statusLED, LOW); //Turn off LED
 
-      if (incoming == escape_character) 
-      {
-        setupMode = true;  //For Trigger Character Feature
-        break; //So we can enter the setup menu
-      }
-    }
+  //    if (incoming == escape_character) 
+  //    {
+  //      setupMode = true;  //For Trigger Character Feature
+  //      break; //So we can enter the setup menu
+  //    }
+  //  }
 
-    if ((millis() - startTime) >= setting_report_rate) break;
-  }
+  //  if ((millis() - startTime) >= setting_report_rate) break;
+  //}
 
-  //If we are serially triggered then wait for incoming character
-  if (setupMode == false && setting_serial_trigger_enable == true)
-  {
-    //Power everything down and go to sleep until a char is received
+  ////If we are serially triggered then wait for incoming character
+  //if (setupMode == false && setting_serial_trigger_enable == true)
+  //{
+  //  //Power everything down and go to sleep until a char is received
 
-    delay(100); //Give the micro time to clear out the transmit buffer
-    //Any less than this and micro doesn't sleep
+  //  delay(100); //Give the micro time to clear out the transmit buffer
+  //  //Any less than this and micro doesn't sleep
 
-    char incoming = 0;
+  //  char incoming = 0;
 
-    //Wait for a trigger character or x from user
-    while (incoming != setting_trigger_character && incoming != 'x')
-    {
-      while (Serial.available() == false) {
+  //  //Wait for a trigger character or x from user
+  //  while (incoming != setting_trigger_character && incoming != 'x')
+  //  {
+  //    while (Serial.available() == false) {
 
-        delay(1);
-        //We go into deep sleep here. This will save 10-20mA.
-        power_twi_disable();
-        power_timer0_disable(); //Shut down peripherals we don't need
+  //      delay(1);
+  //      //We go into deep sleep here. This will save 10-20mA.
+  //      power_twi_disable();
+  //      power_timer0_disable(); //Shut down peripherals we don't need
 
-        sleep_mode(); //Stop everything and go to sleep. Wake up if serial character received
+  //      sleep_mode(); //Stop everything and go to sleep. Wake up if serial character received
 
-        power_timer0_enable();
-        power_twi_enable();
-      }
+  //      power_timer0_enable();
+  //      power_twi_enable();
+  //    }
 
-      incoming = Serial.read();
-      if (incoming == escape_character) setupMode = true;
-    }
-  }
+  //    incoming = Serial.read();
+  //    if (incoming == escape_character) setupMode = true;
+  //  }
+  //}
 
-  //If the user has pressed x go into system setup
-  if (setupMode == true)
-  {
-    system_setup();
-    setupMode = false;
+  ////If the user has pressed x go into system setup
+  //if (setupMode == true)
+  //{
+  //  system_setup();
+  //  setupMode = false;
 
-    if (setting_status_enable == false) digitalWrite(statusLED, LOW); //Turn off LED
-  }
+  //  if (setting_status_enable == false) digitalWrite(statusLED, LOW); //Turn off LED
+  //}
 }
